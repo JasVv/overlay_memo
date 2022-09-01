@@ -1,0 +1,14 @@
+.grid {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  * {
+    padding: 18px;
+  }
+  nav {
+    grid-column: 1 / 2;
+    background-color: aqua;
+  }
+  section {
+    background-color: write;
+  }
+}
