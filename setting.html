@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-  <link href="./css/reset.css" rel="stylesheet">
   <link href="./css/setting.css" rel="stylesheet">
+  <script src="https://unpkg.com/vue@next"></script>
   <title>overlay memo | Setting</title>
 </head>
 <body>
@@ -20,6 +18,7 @@
   <section>
     <article>
       <div>
+        透過度 <input type="range" name="transparent" id="transparent" min="0" max="100">
         コンテンツ　プルダウンから既存コンテンツ選択
         <div>
           <button>+追加</button>
@@ -86,5 +85,6 @@
     </article>
   </section>
 </div>
+<script src="./script/setting.js"></script>
 </body>
 </html>

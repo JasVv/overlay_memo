@@ -3,58 +3,57 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
-const createSettingWindow = () => {
-  const win = new BrowserWindow({
+const openJson = async () => {
+  return JSON.parse(fs.readFileSync("./json/content.json", "UTF-8"))
+};
+
+const changeTransparent = (event, value) => {
+  if (overlayWindow) {
+    overlayWindow.webContents.send('update-transparent', value)
+  }
+}
+
+let settingWindow = null;
+let overlayWindow = null;
+
+const createWindow = () => {
+  settingWindow = new BrowserWindow({
     height: 600,
     width: 800,
     frame: true,
+    webPreferences: {
+      preload: path.join(__dirname, './script/setting_preload.js')
+    },
   });
 
-  win.loadFile('setting.html');
+  settingWindow.loadFile('setting.html');
 
-  // デベロッパー ツールを開きます。
-  // mainWindow.webContents.openDevTools()
-};
+  settingWindow.webContents.openDevTools()
 
-const createWindow1 = () => {
-  const win = new BrowserWindow({
-    height: 300,
-    width: 300,
-    frame: false,
-    resizable: true,
-    transparent: true,
-  });
-
-  win.setAlwaysOnTop(true, "screen-saver");
-  win.loadFile('index.html');
-}
-
-const createWindow2 = () => {
-  const win = new BrowserWindow({
+  overlayWindow = new BrowserWindow({
+    x: 200,
+    y: 100,
     height: 600,
-    width: 800,
+    width: 400,
     frame: false,
     resizable: true,
     transparent: true,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, './script/preload.js')
     },
   })
 
-  win.setAlwaysOnTop(true, "screen-saver");
-  win.loadFile('index2.html');
+  overlayWindow.setAlwaysOnTop(true, "screen-saver");
+  overlayWindow.loadFile('index.html');
 
-  // デベロッパー ツールを開きます。
-  // win.webContents.openDevTools();
-}
+  overlayWindow.webContents.openDevTools()
+};
 
-// このメソッドは、Electron の初期化が完了し、
-// ブラウザウインドウの作成準備ができたときに呼ばれます。
-// 一部のAPIはこのイベントが発生した後にのみ利用できます。
 app.whenReady().then(() => {
-  // createSettingWindow()
-  // createWindow1()
-  createWindow2();
+  createWindow();
+
+  ipcMain.handle("openJson", openJson);
+  ipcMain.on('change-transparent', changeTransparent);
 
   app.on('activate', () => {
     // macOS では、Dock アイコンのクリック時に他に開いているウインドウがない
@@ -69,9 +68,3 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 });
-
-const openJson = async () => {
-  return JSON.parse(fs.readFileSync("./json/content.json", "UTF-8"))
-};
-
-ipcMain.handle("openJson", openJson);

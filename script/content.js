@@ -67,3 +67,10 @@ window.myApp.openJson().then((data) => {
 
   Vue.createApp(vueApp).mount('#app');
 });
+
+window.myApp.updateTransparent((event, value) => {
+  console.log(value)
+  const transparentValue = Number(value) / 100;
+  const target = document.getElementById("main");
+  target.style.backgroundColor = `rgba(24, 24, 24, ${transparentValue})`;
+})
