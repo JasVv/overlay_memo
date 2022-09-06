@@ -13,6 +13,12 @@ const changeTransparent = (event, value) => {
   }
 }
 
+const changeContents = (event, id) => {
+  if (overlayWindow) {
+    overlayWindow.webContents.send('update-contents', id)
+  }
+}
+
 let settingWindow = null;
 let overlayWindow = null;
 
@@ -54,6 +60,7 @@ app.whenReady().then(() => {
 
   ipcMain.handle("openJson", openJson);
   ipcMain.on('change-transparent', changeTransparent);
+  ipcMain.on('change-contents', changeContents);
 
   app.on('activate', () => {
     // macOS では、Dock アイコンのクリック時に他に開いているウインドウがない

@@ -13,10 +13,14 @@ const calcTimeFromInt = (time) => {
   return mStr + ":" + sStr
 }
 
+let vue = null;
+
 window.myApp.openJson().then((data) => {
   const vueApp = {
     data() {
       return {
+        contents: data.contents,
+        selected: data.contents[0],
         title: data.contents[0].title,
         initialTimelines: data.contents[0].timeline,
         timelineHead: data.contents[0].timeline[0],
@@ -61,16 +65,38 @@ window.myApp.openJson().then((data) => {
         this.timelineHead = this.initialTimelines[0]
         this.timelineNext = this.initialTimelines[1]
         this.timelines = this.initialTimelines.slice(2)
+      },
+
+      changeContents(id) {
+        if (this.interval) {
+          clearInterval(this.interval)
+          this.interval = null
+          this.time = "00:00"
+        }
+
+        this.selected = this.contents.find(element => element.id == id);
+        this.title = this.selected.title
+        this.initialTimelines = this.selected.timeline
+        this.timelineHead = this.selected.timeline[0]
+        this.timelineNext = this.selected.timeline[1]
+        this.timelines = this.selected.timeline.slice(2)
+        this.beforeCount = this.selected.beforeCount
+        this.count = this.selected.beforeCount * -1
+        this.interval = null
+        this.time = "00:00"
       }
     }
   }
 
-  Vue.createApp(vueApp).mount('#app');
+  vue = Vue.createApp(vueApp).mount('#app');
 });
 
 window.myApp.updateTransparent((event, value) => {
-  console.log(value)
   const transparentValue = Number(value) / 100;
   const target = document.getElementById("main");
   target.style.backgroundColor = `rgba(24, 24, 24, ${transparentValue})`;
+})
+
+window.myApp.updateContents((event, id) => {
+  vue.changeContents(id);
 })
