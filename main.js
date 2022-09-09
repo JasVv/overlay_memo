@@ -1,5 +1,5 @@
 // アプリケーションの寿命の制御と、ネイティブなブラウザウインドウを作成するモジュール
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -34,7 +34,7 @@ const createWindow = () => {
 
   settingWindow.loadFile('setting.html');
 
-  settingWindow.webContents.openDevTools()
+  // settingWindow.webContents.openDevTools()
 
   overlayWindow = new BrowserWindow({
     x: 200,
@@ -52,7 +52,7 @@ const createWindow = () => {
   overlayWindow.setAlwaysOnTop(true, "screen-saver");
   overlayWindow.loadFile('index.html');
 
-  overlayWindow.webContents.openDevTools()
+  // overlayWindow.webContents.openDevTools()
 };
 
 app.whenReady().then(() => {
@@ -67,6 +67,20 @@ app.whenReady().then(() => {
     // 場合、アプリのウインドウを再作成するのが一般的です。
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   });
+
+  app.on('browser-window-focus', function () {
+    // 最小化のショートカットキー
+    globalShortcut.register('CommandOrControl+M', () => {
+      console.log('CommandOrControl+M is pressed: Shortcut Disabled')
+    })
+    // 最大化のショートカットキー
+    globalShortcut.register('F11', () => {
+      console.log('F11 is pressed: Shortcut Disabled')
+    })
+    globalShortcut.register('Command+Control+F', () => {
+      console.log('Command+Control+F is pressed: Shortcut Disabled')
+    })
+  })
 })
 
 // macOS を除き、全ウインドウが閉じられたときに終了します。 ユーザーが

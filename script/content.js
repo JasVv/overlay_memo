@@ -37,21 +37,25 @@ window.myApp.openJson().then((data) => {
     },
     methods: {
       startCount() {
-        this.interval = setInterval(() => {
-          this.count++
-          if (this.count > 0) {
-            this.time = calcTimeFromInt(this.count)
-          }
+        if (!this.interval) {
+          this.interval = setInterval(() => {
+            this.count++
+            if (this.count >= 0) {
+              this.time = " " + calcTimeFromInt(this.count)
+            } else {
+              this.time = "-" + calcTimeFromInt(this.count * -1)
+            }
 
-          const isOk = (e) => calcTimeFromString(e.time) > this.count
-          const newTimelineIndex = this.initialTimelines.findIndex(isOk)
+            const isOk = (e) => calcTimeFromString(e.time) > this.count
+            const newTimelineIndex = this.initialTimelines.findIndex(isOk)
 
-          if (newTimelineIndex != 0 && newTimelineIndex != -1) {
-            this.timelineHead = this.initialTimelines[newTimelineIndex - 1]
-            this.timelineNext = this.initialTimelines[newTimelineIndex]
-            this.timelines = this.initialTimelines.slice(newTimelineIndex + 1)
-          }
-        }, 1000)
+            if (newTimelineIndex != 0 && newTimelineIndex != -1) {
+              this.timelineHead = this.initialTimelines[newTimelineIndex - 1]
+              this.timelineNext = this.initialTimelines[newTimelineIndex]
+              this.timelines = this.initialTimelines.slice(newTimelineIndex + 1)
+            }
+          }, 1000)
+        }
       },
 
       stopCount() {
@@ -92,7 +96,7 @@ window.myApp.openJson().then((data) => {
 });
 
 window.myApp.updateTransparent((event, value) => {
-  const transparentValue = Number(value) / 100;
+  const transparentValue = (100 - Number(value)) / 100;
   const target = document.getElementById("main");
   target.style.backgroundColor = `rgba(24, 24, 24, ${transparentValue})`;
 })
