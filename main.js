@@ -7,6 +7,10 @@ const openJson = async () => {
   return JSON.parse(fs.readFileSync("./json/content.json", "UTF-8"))
 };
 
+const saveJson = async (event, text) => {
+  fs.writeFileSync("./json/content.json", text);
+};
+
 const changeTransparent = (event, value) => {
   if (overlayWindow) {
     overlayWindow.webContents.send('update-transparent', value)
@@ -34,7 +38,7 @@ const createWindow = () => {
 
   settingWindow.loadFile('setting.html');
 
-  // settingWindow.webContents.openDevTools()
+  settingWindow.webContents.openDevTools()
 
   overlayWindow = new BrowserWindow({
     x: 200,
@@ -52,13 +56,14 @@ const createWindow = () => {
   overlayWindow.setAlwaysOnTop(true, "screen-saver");
   overlayWindow.loadFile('index.html');
 
-  // overlayWindow.webContents.openDevTools()
+  overlayWindow.webContents.openDevTools()
 };
 
 app.whenReady().then(() => {
   createWindow();
 
   ipcMain.handle("openJson", openJson);
+  ipcMain.on("saveJson", saveJson);
   ipcMain.on('change-transparent', changeTransparent);
   ipcMain.on('change-contents', changeContents);
 
