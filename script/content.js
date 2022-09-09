@@ -74,20 +74,21 @@ window.myApp.openJson().then((data) => {
       changeContents(id) {
         if (this.interval) {
           clearInterval(this.interval)
-          this.interval = null
-          this.time = "00:00"
         }
 
-        this.selected = this.contents.find(element => element.id == id);
-        this.title = this.selected.title
-        this.initialTimelines = this.selected.timeline
-        this.timelineHead = this.selected.timeline[0]
-        this.timelineNext = this.selected.timeline[1]
-        this.timelines = this.selected.timeline.slice(2)
-        this.beforeCount = this.selected.beforeCount
-        this.count = this.selected.beforeCount * -1
-        this.interval = null
-        this.time = "00:00"
+        window.myApp.openJson().then((newData) => {
+          this.contents = newData.contents
+          this.selected = this.contents.find(element => element.id == id)
+          this.title = this.selected.title
+          this.initialTimelines = this.selected.timeline
+          this.timelineHead = this.selected.timeline[0]
+          this.timelineNext = this.selected.timeline[1]
+          this.timelines = this.selected.timeline.slice(2)
+          this.beforeCount = this.selected.beforeCount
+          this.count = this.selected.beforeCount * -1
+          this.interval = null
+          this.time = "00:00"
+        })
       }
     }
   }
