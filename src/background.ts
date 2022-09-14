@@ -1,28 +1,69 @@
 "use strict";
 
-import { app, protocol, BrowserWindow } from "electron";
+import { app, protocol, BrowserWindow, ipcMain } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
+const path = require("path");
+const fs = require("fs");
 const isDevelopment = process.env.NODE_ENV !== "production";
+
+let timelineWin: any;
+
+const openJson = async () => {
+  return JSON.parse(fs.readFileSync("./public/json/timeline.json", "UTF-8"));
+};
+
+const saveJson = async (event: object, text: string) => {
+  fs.writeFileSync("./public/json/timeline.json", text);
+};
+
+const changeTransparent = (event: object, value: number) => {
+  if (timelineWin) {
+    timelineWin.webContents.send("update-transparent", value);
+  }
+};
+
+const changeContents = (event: object, id: number) => {
+  if (timelineWin) {
+    timelineWin.webContents.send("update-contents", id);
+  }
+};
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
 ]);
 
-let settingWin
-let timelineWin
-
 async function createWindow(name: string, devPath: string, prodPath: string) {
   // Create the browser window.
-  let window = new BrowserWindow({
-    width: 800,
-    height: 600,
-  });
+  let window;
+
+  if (name == "setting") {
+    window = new BrowserWindow({
+      width: 800,
+      height: 600,
+    });
+  } else {
+    window = new BrowserWindow({
+      x: 200,
+      y: 100,
+      height: 600,
+      width: 400,
+      frame: false,
+      resizable: true,
+      transparent: true,
+      webPreferences: {
+        preload: path.join(__dirname, "preloadTimeline.js"),
+      },
+    });
+    window.setAlwaysOnTop(true, "screen-saver");
+  }
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
-    await window.loadURL(process.env.WEBPACK_DEV_SERVER_URL + devPath as string);
+    await window.loadURL(
+      (process.env.WEBPACK_DEV_SERVER_URL + devPath) as string
+    );
     if (!process.env.IS_TEST) window.webContents.openDevTools();
   } else {
     window.loadURL(`app://./${prodPath}`);
@@ -44,9 +85,9 @@ app.on("activate", () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    settingWin = createWindow('setting', '', 'index.html');
-    timelineWin = createWindow('timeline', 'timeline', 'timeline.html');
-  };
+    createWindow("setting", "", "index.html");
+    timelineWin = createWindow("timeline", "timeline", "timeline.html");
+  }
 });
 
 // This method will be called when Electron has finished
@@ -63,10 +104,15 @@ app.on("ready", async () => {
   }
 
   if (!process.env.WEBPACK_DEV_SERVER_URL) {
-    createProtocol('app');
-  };
-  settingWin = createWindow('setting', '', 'index.html');
-  timelineWin = createWindow('timeline', 'timeline', 'timeline.html');
+    createProtocol("app");
+  }
+  createWindow("setting", "", "index.html");
+  timelineWin = createWindow("timeline", "timeline", "timeline.html");
+
+  ipcMain.handle("openJson", openJson);
+  ipcMain.on("saveJson", saveJson);
+  ipcMain.on("change-transparent", changeTransparent);
+  ipcMain.on("change-contents", changeContents);
 });
 
 // Exit cleanly on request from parent process in development mode.
