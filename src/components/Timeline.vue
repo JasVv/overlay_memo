@@ -66,7 +66,6 @@ export default class Timeline extends Vue {
   time = "00:00";
 
   mounted() {
-    console.log("AAABBBCCC");
     (window as any).myApp.openJson().then((data: ContentsJson) => {
       this.contents = data.contents;
       this.selected = data.contents[0];

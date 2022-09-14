@@ -6,15 +6,16 @@ import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 const path = require("path");
 const fs = require("fs");
 const isDevelopment = process.env.NODE_ENV !== "production";
+declare const __static: string;
 
 let timelineWin: any;
 
 const openJson = async () => {
-  return JSON.parse(fs.readFileSync("./public/json/timeline.json", "UTF-8"));
+  return JSON.parse(fs.readFileSync(__static + "/json/timeline.json", "UTF-8"));
 };
 
 const saveJson = async (event: object, text: string) => {
-  fs.writeFileSync("./public/json/timeline.json", text);
+  fs.writeFileSync(__static + "/json/timeline.json", text);
 };
 
 const changeTransparent = (event: object, value: number) => {
