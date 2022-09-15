@@ -64,8 +64,17 @@ export default class Timeline extends Vue {
   count = 0;
   interval: any = null;
   time = "00:00";
+  transparent = 0.5;
 
-  mounted() {
+  public mounted() {
+    (window as any).myApp.updateTransparent((event: any, value: number) => {
+      const transparentValue = (100 - value) / 100;
+      const target: HTMLElement | null = document.getElementById("main");
+      if (target) {
+        target.style.backgroundColor = `rgba(24, 24, 24, ${transparentValue})`;
+      }
+    });
+
     (window as any).myApp.openJson().then((data: ContentsJson) => {
       this.contents = data.contents;
       this.selected = data.contents[0];
@@ -160,7 +169,6 @@ export default class Timeline extends Vue {
 
 <style lang="scss">
 .timeline {
-  background-color: rgba(24, 24, 24, 0.5);
   color: #fff;
   -webkit-app-region: no-drag;
   -webkit-user-select: none;
@@ -180,7 +188,7 @@ header {
 
 .button {
   display: inline-block;
-  background-color: rgba(24, 24, 24, 1);
+  background-color: rgba(24, 24, 24, 0);
   -webkit-app-region: no-drag;
 }
 

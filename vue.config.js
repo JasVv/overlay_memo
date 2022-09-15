@@ -18,7 +18,8 @@ module.exports = defineConfig({
   pluginOptions: {
     electronBuilder: {
       preload: {
-        preloadTimeline: 'src/preload/preloadTimeline.js',
+        preloadTimeline: "src/preload/preloadTimeline.js",
+        preloadSetting: "src/preload/preloadSetting.js",
       },
     },
   },

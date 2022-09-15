@@ -8,7 +8,7 @@ const fs = require("fs");
 const isDevelopment = process.env.NODE_ENV !== "production";
 declare const __static: string;
 
-let timelineWin: any;
+let timelineWin: BrowserWindow;
 
 const openJson = async () => {
   return JSON.parse(fs.readFileSync(__static + "/json/timeline.json", "UTF-8"));
@@ -43,6 +43,9 @@ async function createWindow(name: string, devPath: string, prodPath: string) {
     window = new BrowserWindow({
       width: 800,
       height: 600,
+      webPreferences: {
+        preload: path.join(__dirname, "preloadSetting.js"),
+      },
     });
   } else {
     window = new BrowserWindow({
@@ -70,7 +73,9 @@ async function createWindow(name: string, devPath: string, prodPath: string) {
     window.loadURL(`app://./${prodPath}`);
   }
 
-  return window;
+  if (name == "timeline") {
+    timelineWin = await window;
+  }
 }
 
 // Quit when all windows are closed.
@@ -87,7 +92,7 @@ app.on("activate", () => {
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow("setting", "", "index.html");
-    timelineWin = createWindow("timeline", "timeline", "timeline.html");
+    createWindow("timeline", "timeline", "timeline.html");
   }
 });
 
@@ -108,7 +113,7 @@ app.on("ready", async () => {
     createProtocol("app");
   }
   createWindow("setting", "", "index.html");
-  timelineWin = createWindow("timeline", "timeline", "timeline.html");
+  createWindow("timeline", "timeline", "timeline.html");
 
   ipcMain.handle("openJson", openJson);
   ipcMain.on("saveJson", saveJson);
