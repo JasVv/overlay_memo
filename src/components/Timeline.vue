@@ -75,6 +75,31 @@ export default class Timeline extends Vue {
       }
     });
 
+    (window as any).myApp.updateContents((event: any, id: number) => {
+      if (this.interval) {
+        clearInterval(this.interval);
+      }
+
+      (window as any).myApp.openJson().then((newData: ContentsJson) => {
+        this.contents = newData.contents;
+        const foundContents = this.contents.find(
+          (element: Contents) => element.id == id
+        );
+        if (foundContents) {
+          this.selected = foundContents;
+        }
+        this.title = this.selected.title;
+        this.initialTimelines = this.selected.timeline;
+        this.timelineHead = this.selected.timeline[0];
+        this.timelineNext = this.selected.timeline[1];
+        this.timelines = this.selected.timeline.slice(2);
+        this.beforeCount = this.selected.beforeCount;
+        this.count = this.selected.beforeCount * -1;
+        this.interval = null;
+        this.time = "00:00";
+      });
+    });
+
     (window as any).myApp.openJson().then((data: ContentsJson) => {
       this.contents = data.contents;
       this.selected = data.contents[0];
@@ -138,31 +163,6 @@ export default class Timeline extends Vue {
     this.timelineHead = this.initialTimelines[0];
     this.timelineNext = this.initialTimelines[1];
     this.timelines = this.initialTimelines.slice(2);
-  }
-
-  changeContents(id: number) {
-    if (this.interval) {
-      clearInterval(this.interval);
-    }
-
-    (window as any).myApp.openJson().then((newData: ContentsJson) => {
-      this.contents = newData.contents;
-      const foundContents = this.contents.find(
-        (element: Contents) => element.id == id
-      );
-      if (foundContents) {
-        this.selected = foundContents;
-      }
-      this.title = this.selected.title;
-      this.initialTimelines = this.selected.timeline;
-      this.timelineHead = this.selected.timeline[0];
-      this.timelineNext = this.selected.timeline[1];
-      this.timelines = this.selected.timeline.slice(2);
-      this.beforeCount = this.selected.beforeCount;
-      this.count = this.selected.beforeCount * -1;
-      this.interval = null;
-      this.time = "00:00";
-    });
   }
 }
 </script>
