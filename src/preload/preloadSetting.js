@@ -5,4 +5,6 @@ contextBridge.exposeInMainWorld("myAppSetting", {
   saveJson: async (text) => ipcRenderer.send("saveJson", text),
   changeTransparent: (value) => ipcRenderer.send("change-transparent", value),
   changeContents: (id) => ipcRenderer.send("change-contents", id),
+  importFile: async () => ipcRenderer.invoke("import-file"),
+  exportFile: async () => ipcRenderer.send("export-file"),
 });

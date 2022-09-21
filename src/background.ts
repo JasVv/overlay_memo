@@ -1,21 +1,109 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, ipcMain } from "electron";
+import { app, protocol, BrowserWindow, ipcMain, dialog } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 const path = require("path");
 const fs = require("fs");
+const Store = require("electron-store");
+const store = new Store();
+
 const isDevelopment = process.env.NODE_ENV !== "production";
 declare const __static: string;
 
 let timelineWin: BrowserWindow;
 
+const getInitTimeline = () => {
+  return JSON.stringify({
+    contents: [
+      {
+        id: 1,
+        title: "Sample",
+        beforeCount: 5,
+        timeline: [
+          {
+            id: 1,
+            time: "00:00",
+            action: "START",
+            memo: "",
+          },
+          {
+            id: 2,
+            time: "00:05",
+            action: "ACTION1",
+            memo: "",
+          },
+          {
+            id: 3,
+            time: "00:10",
+            action: "ACTION2",
+            memo: "",
+          },
+        ],
+      },
+    ],
+  });
+};
+
 const openJson = async () => {
-  return JSON.parse(fs.readFileSync(__static + "/json/timeline.json", "UTF-8"));
+  const timeline = store.get("timeline") || getInitTimeline();
+  return JSON.parse(timeline);
 };
 
 const saveJson = async (event: object, text: string) => {
-  fs.writeFileSync(__static + "/json/timeline.json", text);
+  const timeline = store.set("timeline", text);
+};
+
+const importFile = async () => {
+  const win: any = BrowserWindow.getFocusedWindow();
+
+  const result = await dialog.showOpenDialog(win, {
+    properties: ["openFile"],
+    filters: [
+      {
+        name: "Documents",
+        extensions: ["json"],
+      },
+    ],
+  });
+
+  if (result.canceled) {
+    return;
+  }
+
+  if (result.filePaths.length > 0) {
+    const filePath = result.filePaths[0];
+    const textData = fs.readFileSync(filePath, "utf8");
+
+    try {
+      await saveJson({}, JSON.stringify(JSON.parse(textData), null, 4));
+    } catch (e: any) {
+      console.error("import failed", e.toString());
+    }
+  }
+};
+
+const exportFile = async () => {
+  const win: any = BrowserWindow.getFocusedWindow();
+
+  const result = await dialog.showSaveDialog(win, {
+    filters: [
+      {
+        name: "Documents",
+        extensions: ["json"],
+      },
+    ],
+  });
+
+  if (result.canceled) {
+    return;
+  }
+
+  const timeline = store.get("timeline") || getInitTimeline();
+  fs.writeFileSync(
+    result.filePath,
+    JSON.stringify(JSON.parse(timeline), null, 4)
+  );
 };
 
 const changeTransparent = (event: object, value: number) => {
@@ -73,6 +161,14 @@ async function createWindow(name: string, devPath: string, prodPath: string) {
     window.loadURL(`app://./${prodPath}`);
   }
 
+  if (name == "setting") {
+    window.on("close", () => {
+      if (timelineWin) {
+        timelineWin.close();
+      }
+    });
+  }
+
   if (name == "timeline") {
     timelineWin = await window;
   }
@@ -119,6 +215,8 @@ app.on("ready", async () => {
   ipcMain.on("saveJson", saveJson);
   ipcMain.on("change-transparent", changeTransparent);
   ipcMain.on("change-contents", changeContents);
+  ipcMain.handle("import-file", importFile);
+  ipcMain.on("export-file", exportFile);
 });
 
 // Exit cleanly on request from parent process in development mode.

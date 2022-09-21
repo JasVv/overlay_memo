@@ -21,7 +21,7 @@
           <td>{{ timelineNext.action }}</td>
           <td style="white-space: pre-wrap">{{ timelineNext.memo }}</td>
         </tr>
-        <tr v-for="timeline in timelines" v-bind:key="timeline.time">
+        <tr v-for="timeline in timelines" v-bind:key="timeline.id">
           <td>{{ timeline.time }}</td>
           <td>{{ timeline.action }}</td>
           <td style="white-space: pre-wrap">{{ timeline.memo }}</td>
@@ -35,6 +35,7 @@
 import { Vue } from "vue-class-component";
 
 interface Timelines {
+  id: number;
   time: string;
   action: string;
   memo: string;
