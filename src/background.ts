@@ -130,10 +130,27 @@ const changeContents = (event: object, id: number) => {
   }
 };
 
-const template = Menu.buildFromTemplate([
+const isMac = process.platform === "darwin";
+
+const template = [
+  ...(isMac
+    ? [
+        {
+          label: app.name,
+          submenu: [
+            { role: "about" },
+            { type: "separator" },
+            { role: "services" },
+            { type: "separator" },
+            { role: "quit" },
+          ],
+        },
+      ]
+    : []),
   {
     label: "File",
     submenu: [
+      isMac ? { role: "close" } : { role: "quit" },
       {
         label: "Import",
         click: () => {
@@ -148,10 +165,33 @@ const template = Menu.buildFromTemplate([
       },
     ],
   },
-]);
+  {
+    label: "Edit",
+    submenu: [
+      { role: "undo" },
+      { role: "redo" },
+      { type: "separator" },
+      { role: "cut" },
+      { role: "copy" },
+      { role: "paste" },
+      ...(isMac
+        ? [
+            { role: "pasteAndMatchStyle" },
+            { role: "delete" },
+            { role: "selectAll" },
+            { type: "separator" },
+            {
+              label: "Speech",
+              submenu: [{ role: "startSpeaking" }, { role: "stopSpeaking" }],
+            },
+          ]
+        : [{ role: "delete" }, { type: "separator" }, { role: "selectAll" }]),
+    ],
+  },
+];
 
-// メニューを適用する
-Menu.setApplicationMenu(template);
+const menu = Menu.buildFromTemplate(template as any);
+Menu.setApplicationMenu(menu);
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([

@@ -39,7 +39,7 @@
             <!-- The circle and title -->
             <div class="timeline__top">
               <!-- The circle -->
-              <div class="timeline__circle"></div>
+              <div class="timeline__circle__next"></div>
 
               <!-- The title -->
               <div class="timeline__title">
@@ -304,6 +304,18 @@ header {
   width: 1rem;
 
   margin-left: 0.5rem;
+}
+
+.timeline__circle__next {
+  /* Rounded border */
+  background-color: #d1d5db;
+  border-radius: 9999px;
+
+  /* Size */
+  height: 1rem;
+  width: 1rem;
+
+  margin-left: 0.45rem;
 }
 
 .timeline__title {

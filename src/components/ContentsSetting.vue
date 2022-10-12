@@ -22,19 +22,21 @@
         </div>
 
         <div>
-          <table border="1">
+          <table border="1" style="width: 100%">
             <tr v-for="timeline in timelines" v-bind:key="timeline.id">
-              <td>{{ timeline.time }}</td>
-              <td>{{ timeline.action }}</td>
-              <td style="white-space: pre-wrap">{{ timeline.memo }}</td>
+              <td class="time">{{ timeline.time }}</td>
+              <td class="action">{{ timeline.action }}</td>
+              <td class="memo">
+                {{ timeline.memo }}
+              </td>
               <td>
                 <button v-on:click="deleteTimeline(timeline.id)">DEL</button>
               </td>
             </tr>
             <tr>
-              <td><input type="text" v-model="newTime" /></td>
-              <td><input type="text" v-model="newAction" /></td>
-              <td><textarea v-model="newMemo"></textarea></td>
+              <td class="time"><input type="text" v-model="newTime" /></td>
+              <td class="action"><input type="text" v-model="newAction" /></td>
+              <td class="memo"><textarea v-model="newMemo"></textarea></td>
               <td><button v-on:click="addTimeline">ADD</button></td>
             </tr>
           </table>
@@ -112,7 +114,7 @@ export default class ContentsSetting extends Vue {
   addTimeline() {
     if (this.newTime != "") {
       let newId = 1;
-      if (!this.timelines.length) {
+      if (this.timelines.length) {
         newId = Math.max(...this.timelines.map((t) => t.id)) + 1;
       }
 
@@ -177,14 +179,30 @@ export default class ContentsSetting extends Vue {
   display: grid;
   grid-template-columns: 150px 1fr;
   * {
-    padding: 18px;
+    padding: 3px;
   }
   nav {
     grid-column: 1 / 2;
-    background-color: aqua;
+    background-color: write;
   }
   article {
     background-color: write;
   }
+}
+
+tr {
+  height: 20px;
+}
+
+.time {
+  width: 30px;
+}
+
+.action {
+}
+
+.memo {
+  white-space: pre-wrap;
+  text-align: left;
 }
 </style>
