@@ -1,7 +1,9 @@
 <template>
   <nav>
-    <router-link to="/">タイムライン設定</router-link> |
-    <router-link to="/about">オーバーレイ設定</router-link>
+    <ul>
+      <li><router-link to="/">タイムライン設定</router-link></li>
+      <li><router-link to="/about">オーバーレイ設定</router-link></li>
+    </ul>
   </nav>
   <router-view />
 </template>
@@ -16,15 +18,33 @@
 }
 
 nav {
-  padding: 30px;
+  padding: 0px;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+ul {
+  display: table;
+  margin: 0 auto;
+  padding: 0;
+  width: 100%;
+  text-align: center;
+}
+ul li {
+  display: table-cell;
+  width: 100px;
+}
+ul li a {
+  display: block;
+  width: 100%;
+  padding: 10px 0;
+  text-decoration: none;
+  color: #555;
+  font-weight: bold;
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  &.router-link-exact-active {
+    background-color: #deebf7;
   }
+}
+ul li:hover {
+  background-color: #fff2cc;
 }
 </style>
