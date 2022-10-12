@@ -10,10 +10,6 @@
       </nav>
       <article>
         <div>
-          <button v-on:click="importFile">import</button>
-          <button v-on:click="exportFile">export</button>
-        </div>
-        <div>
           <select v-on:change="changeContents" id="contents">
             <option
               v-for="content in contents"
@@ -172,25 +168,6 @@ export default class ContentsSetting extends Vue {
       .then(() => {
         (window as any).myAppSetting.changeContents(this.selected.id);
       });
-  }
-
-  async importFile() {
-    await (window as any).myAppSetting.importFile();
-
-    (window as any).myAppSetting.openJson().then((data: ContentsJson) => {
-      this.contents = data.contents;
-      this.selected = data.contents[0];
-      this.timelines = data.contents[0].timeline;
-      this.ready = true;
-      this.newTime = "";
-      this.newAction = "";
-      this.newMemo = "";
-      (window as any).myAppSetting.changeContents(1);
-    });
-  }
-
-  exportFile() {
-    (window as any).myAppSetting.exportFile();
   }
 }
 </script>

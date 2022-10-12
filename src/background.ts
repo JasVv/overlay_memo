@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, protocol, BrowserWindow, ipcMain, dialog, Menu } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 const path = require("path");
@@ -12,6 +12,7 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 declare const __static: string;
 
 let timelineWin: BrowserWindow;
+let settingWin: BrowserWindow;
 
 const getInitTimeline = () => {
   return JSON.stringify({
@@ -77,6 +78,17 @@ const importFile = async () => {
 
     try {
       await saveJson({}, JSON.stringify(JSON.parse(textData), null, 4));
+
+      if (timelineWin) {
+        timelineWin.close();
+      }
+
+      if (settingWin) {
+        settingWin.close();
+      }
+
+      createWindow("setting", "", "index.html");
+      createWindow("timeline", "timeline", "timeline.html");
     } catch (e: any) {
       console.error("import failed", e.toString());
     }
@@ -117,6 +129,29 @@ const changeContents = (event: object, id: number) => {
     timelineWin.webContents.send("update-contents", id);
   }
 };
+
+const template = Menu.buildFromTemplate([
+  {
+    label: "File",
+    submenu: [
+      {
+        label: "Import",
+        click: () => {
+          importFile();
+        },
+      },
+      {
+        label: "Export",
+        click: () => {
+          exportFile();
+        },
+      },
+    ],
+  },
+]);
+
+// メニューを適用する
+Menu.setApplicationMenu(template);
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -172,6 +207,10 @@ async function createWindow(name: string, devPath: string, prodPath: string) {
   if (name == "timeline") {
     timelineWin = await window;
   }
+
+  if (name == "setting") {
+    settingWin = await window;
+  }
 }
 
 // Quit when all windows are closed.
@@ -215,8 +254,6 @@ app.on("ready", async () => {
   ipcMain.on("saveJson", saveJson);
   ipcMain.on("change-transparent", changeTransparent);
   ipcMain.on("change-contents", changeContents);
-  ipcMain.handle("import-file", importFile);
-  ipcMain.on("export-file", exportFile);
 });
 
 // Exit cleanly on request from parent process in development mode.
