@@ -10,23 +10,73 @@
           <img src="../assets/stop.png" alt="button" width="16" height="16" />️
         </button>
       </header>
-      <table border="1">
-        <tr class="timelineHead">
-          <td>{{ timelineHead.time }}</td>
-          <td>{{ timelineHead.action }}</td>
-          <td style="white-space: pre-wrap">{{ timelineHead.memo }}</td>
-        </tr>
-        <tr class="timelineNext">
-          <td>{{ timelineNext.time }}</td>
-          <td>{{ timelineNext.action }}</td>
-          <td style="white-space: pre-wrap">{{ timelineNext.memo }}</td>
-        </tr>
-        <tr v-for="timeline in timelines" v-bind:key="timeline.id">
-          <td>{{ timeline.time }}</td>
-          <td>{{ timeline.action }}</td>
-          <td style="white-space: pre-wrap">{{ timeline.memo }}</td>
-        </tr>
-      </table>
+      <div class="timeline__body">
+        <!-- Left vertical line -->
+        <div class="timeline__line"></div>
+
+        <!-- The timeline items timeline -->
+        <div class="timeline__items">
+          <!-- Each timeline item -->
+          <div class="timeline__item timelineHead">
+            <!-- The circle and title -->
+            <div class="timeline__top">
+              <!-- The circle -->
+              <div class="timeline__circle"></div>
+
+              <!-- The title -->
+              <div class="timeline__title">
+                {{ timelineHead.time }} {{ timelineHead.action }}
+              </div>
+            </div>
+
+            <!-- The description -->
+            <div class="timeline__desc" style="white-space: pre-wrap">
+              {{ timelineHead.memo }}
+            </div>
+          </div>
+
+          <div class="timeline__item timelineNext">
+            <!-- The circle and title -->
+            <div class="timeline__top">
+              <!-- The circle -->
+              <div class="timeline__circle"></div>
+
+              <!-- The title -->
+              <div class="timeline__title">
+                {{ timelineNext.time }} {{ timelineNext.action }}
+              </div>
+            </div>
+
+            <!-- The description -->
+            <div class="timeline__desc" style="white-space: pre-wrap">
+              {{ timelineNext.memo }}
+            </div>
+          </div>
+
+          <!-- Repeat other items -->
+          <div
+            class="timeline__item"
+            v-for="timeline in timelines"
+            v-bind:key="timeline.id"
+          >
+            <!-- The circle and title -->
+            <div class="timeline__top">
+              <!-- The circle -->
+              <div class="timeline__circle"></div>
+
+              <!-- The title -->
+              <div class="timeline__title">
+                {{ timeline.time }} {{ timeline.action }}
+              </div>
+            </div>
+
+            <!-- The description -->
+            <div class="timeline__desc" style="white-space: pre-wrap">
+              {{ timeline.memo }}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -65,9 +115,14 @@ export default class Timeline extends Vue {
   count = 0;
   interval: any = null;
   time = "00:00";
-  transparent = 0.5;
+  transparent = 0.7;
 
   public mounted() {
+    const target: HTMLElement | null = document.getElementById("main");
+    if (target) {
+      target.style.backgroundColor = `rgba(24, 24, 24, ${this.transparent})`;
+    }
+
     (window as any).myApp.updateTransparent((event: any, value: number) => {
       const transparentValue = (100 - value) / 100;
       const target: HTMLElement | null = document.getElementById("main");
@@ -198,6 +253,68 @@ header {
 }
 
 .timelineNext {
-  color: #ffff00;
+  border-radius: 5px;
+  border-style: solid;
+  border-color: yellow;
+  border-width: 1px;
+}
+
+.timeline__body {
+  /* Used to position the left vertical line */
+  position: relative;
+}
+
+.timeline__line {
+  /* Border */
+  border-right: 2px solid #d1d5db;
+
+  /* Positioned at the left */
+  left: 0.95rem;
+  position: absolute;
+  top: 20px;
+
+  /* Take full height */
+  height: 9999px;
+}
+
+.timeline__items {
+  /* Reset styles */
+  list-style-type: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+.timeline__item {
+  margin-bottom: 20px;
+}
+
+.timeline__top {
+  /* Center the content horizontally */
+  align-items: center;
+  display: flex;
+}
+
+.timeline__circle {
+  /* Rounded border */
+  background-color: #d1d5db;
+  border-radius: 9999px;
+
+  /* Size */
+  height: 1rem;
+  width: 1rem;
+
+  margin-left: 0.5rem;
+}
+
+.timeline__title {
+  /* Take available width */
+  flex: 1;
+  margin-left: 0.5rem;
+}
+
+.timeline__desc {
+  /* Make it align with the title */
+  margin-left: 3rem;
+  font-size: 14px;
 }
 </style>
