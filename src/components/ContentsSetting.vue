@@ -204,5 +204,6 @@ tr {
 .memo {
   white-space: pre-wrap;
   text-align: left;
+  font-family: monospace;
 }
 </style>

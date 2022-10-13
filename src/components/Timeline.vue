@@ -30,7 +30,7 @@
             </div>
 
             <!-- The description -->
-            <div class="timeline__desc" style="white-space: pre-wrap">
+            <div class="timeline__desc">
               {{ timelineHead.memo }}
             </div>
           </div>
@@ -48,7 +48,7 @@
             </div>
 
             <!-- The description -->
-            <div class="timeline__desc" style="white-space: pre-wrap">
+            <div class="timeline__desc">
               {{ timelineNext.memo }}
             </div>
           </div>
@@ -71,7 +71,7 @@
             </div>
 
             <!-- The description -->
-            <div class="timeline__desc" style="white-space: pre-wrap">
+            <div class="timeline__desc">
               {{ timeline.memo }}
             </div>
           </div>
@@ -328,5 +328,7 @@ header {
   /* Make it align with the title */
   margin-left: 3rem;
   font-size: 14px;
+  font-family: monospace;
+  white-space: pre-wrap;
 }
 </style>
